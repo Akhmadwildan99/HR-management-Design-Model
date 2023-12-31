@@ -1,0 +1,323 @@
+// Master data
+
+entity HrLov {
+    name String
+    key String 
+    value String 
+    description String
+
+    isActive Boolean
+    createdDate Instant
+    createdBy String
+    lastModifiedate Instant
+    lastModifiedBy String
+}
+
+entity HrAttachmentAuth {
+    name String
+    att Blob
+    attContentType String
+
+    isActive Boolean
+    createdDate Instant
+    createdBy String
+    lastModifiedate Instant
+    lastModifiedBy String
+}
+
+entity HrTextAuth {
+    content TextBlob
+   
+    isActive Boolean
+    createdDate Instant
+    createdBy String
+    lastModifiedate Instant
+    lastModifiedBy String
+} 
+
+entity HrStage {
+    name String
+    seq Integer
+    colorCode String
+    iconCode String
+
+    isActive Boolean
+    createdDate Instant
+    createdBy String
+    lastModifiedate Instant
+    lastModifiedBy String
+}
+
+// Job
+
+
+enum HrWorkerType {
+    FULL_TIME, PART_TIME, FREELANCE
+}
+
+entity HrJob {
+    title String
+    category String
+    location String
+    countExp Integer
+    workerType HrWorkerType
+    iconCode String
+    colorCode String
+
+    isActive Boolean
+    createdDate Instant
+    createdBy String
+    lastModifiedate Instant
+    lastModifiedBy String
+}
+
+entity HrJobSkill {
+    name String
+    isActive Boolean
+    createdDate Instant
+    createdBy String
+}
+
+entity HrJobStage {
+    name String
+    seq Integer
+    colorCode String
+    iconCode String
+
+    isActive Boolean
+    createdDate Instant
+    createdBy String
+    lastModifiedate Instant
+    lastModifiedBy String
+}
+
+entity HrJobStageCollaborator {
+    name String
+
+    isActive Boolean
+    createdDate Instant
+    createdBy String
+}
+
+// CANDIDDATE and COLLABORATE
+
+enum HrUserType {
+   CANDIDDATE,  COLLABORATE
+}
+
+enum HrGender {
+    MALE, FEMALE
+}
+
+enum HrEmergencyContactType {
+    FATHER, MOTHER, BROTHER, SISTER
+}
+
+entity HrUser {
+    id String
+    login String
+    email String
+    passwordHash String maxlength(1000)
+
+    isActive Boolean
+    createdDate Instant
+    createdBy String
+    lastModifiedate Instant
+    lastModifiedBy String
+}
+
+entity HrUserInfo {
+    id String
+    userType HrUserType 
+    name String
+    email String
+    phone String
+    address String maxlength(1000)
+    country String
+    gender HrGender
+    birthDate LocalDate 
+    dateOfHire LocalDate
+    emergencyContact String
+    emergencyContactType HrEmergencyContactType
+
+    isActive Boolean
+    createdDate Instant
+    createdBy String
+    lastModifiedate Instant
+    lastModifiedBy String
+}
+
+entity HrCandidateInfo {
+    currentJob String
+    countExp Integer
+    website String
+    currentSalary BigDecimal
+    expectedSalary BigDecimal
+    stage String
+    seqStage Integer
+
+    isActive Boolean
+    createdDate Instant
+    createdBy String
+    lastModifiedate Instant
+    lastModifiedBy String
+
+}
+
+entity HrResume {
+    fileName String
+    isActive Boolean
+    createdDate Instant
+    createdBy String
+    lastModifiedate Instant
+    lastModifiedBy String
+}
+
+entity HrUserEducation {
+    name String
+    degree String
+    major String
+    startDate Instant
+    endDate Instant
+    description String maxlength(500)
+
+    isActive Boolean
+    createdDate Instant
+    createdBy String
+    lastModifiedate Instant
+    lastModifiedBy String
+}
+
+entity HrUserExperience {
+    companyName  String
+    jobTitle String
+    startDate Instant
+    endDate Instant
+    description String maxlength(500)
+
+    isActive Boolean
+    createdDate Instant
+    createdBy String
+    lastModifiedate Instant
+    lastModifiedBy String
+}
+
+entity HrUserSkill {
+    name String
+
+    isActive Boolean
+    createdDate Instant
+    createdBy String
+}
+
+// FOR VW
+
+entity HrVwJob {
+    name String
+    category String
+    location String
+    workerType HrWorkerType
+    hiringName String
+    hiringPhotoId Long
+    hiringStatus Boolean
+}
+
+entity HrVwJobInfo {
+    name String
+    category String
+    location String
+    workerType HrWorkerType
+    countTotal Long
+    iconCode String
+    colorCode String
+    countNew Long
+    countProgress Long
+    countHire Long
+}
+
+
+entity HrVwJobCandidate {
+   id String
+   name String
+   skillSets String
+   createdDate Instant
+   photoId Long
+   stageId Long
+   jobId Long
+}
+
+
+entity HrVwCandidate {
+    id String
+    name String
+    photoId String
+    jobName String
+    stage String
+    seqStage Integer
+    countStage Integer
+    hiringName String
+    hiringPhotoId Long
+    collaboratorAgg String 
+    isActive Boolean
+    createdDate Instant
+
+}
+
+entity HrVwUserInfo {
+    id String
+    name String
+    photoId Long
+    jobName String
+    jobCategory String
+    dateOfHire LocalDate
+    email String
+    phone String
+    gender HrGender
+    dateOfBirth LocalDate
+    country String
+    address String
+    emergencyContact String
+    emergencyContactType HrEmergencyContactType
+    educationDtl String
+    skillDtl String
+    experienceDtl String
+}
+
+/**
+ * One to one relationship.
+ */
+relationship OneToOne {
+   HrUserInfo{idCardId} to HrAttachmentAuth
+   HrUserInfo{photoId} to HrAttachmentAuth
+   HrJob{descriptionId} to HrTextAuth
+    HrUser to HrUserInfo 
+   HrUserInfo to HrCandidateInfo
+   HrResume{resumeAttId} to HrAttachmentAuth
+
+}
+
+/**
+ * One to many relationship.
+ */
+relationship OneToMany {
+    HrJob to HrJobSkill
+    HrJob to HrJobStage
+    HrUserInfo to HrResume
+    HrUserInfo to HrUserSkill
+    HrUserInfo to HrUserExperience
+    HrUserInfo to HrUserEducation
+    HrJobStage to HrJobStageCollaborator
+
+}
+
+
+
+/**
+ * Many to one relationship.
+ */
+relationship ManyToOne {
+    HrJob{hiringId} to HrUser
+    HrJobStageCollaborator{collaboratorId} to HrUser
+}
+
+
